@@ -4,12 +4,17 @@ require_once '../includes/ApiService.php';
 require_once '../includes/database.php';
 require_once '../includes/autorepository.php';
 
-$database = new Database();
-
 $api = new ApiService();
 
-$response = $api->getContentFromApi('');
+if (isset($_GET['make'])) {
+    $make = $_GET['make'];
 
+    $response = $api->getContentFromApi(
+            'cars?make=' . urlencode($make)
+    );
+} else {
+    $response = $api->getContentFromApi('');
+}
 ?>
 
 <!doctype html>
@@ -29,31 +34,31 @@ $response = $api->getContentFromApi('');
 <div class="container mt-4">
     <div class="row">
 
-        <?php foreach ($response as $auto): ?>
+        <?php if (!isset($_GET['make'])): ?>
 
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body">
+            <?php foreach ($response as $auto): ?>
 
-                        <h5 class="card-title">
-                            <?= htmlspecialchars($auto['name']) ?>
-                        </h5>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
 
-                        <?php if (isset($auto['id'])): ?>
-                            <p class="card-text">
-                                ID: <?= htmlspecialchars($auto['id']) ?>
-                            </p>
-                        <?php endif; ?>
+                        <div class="card-body">
 
-                        <a href="#" class="btn btn-primary">
-                            Bekijk
-                        </a>
+                            <h5 class="card-title">
+                                <?= htmlspecialchars($auto) ?>
+                            </h5>
+
+                            <a href="modellen.php?make=<?= urlencode($auto) ?>" class="btn btn-primary">
+                                Bekijk auto's
+                            </a>
+
+                        </div>
 
                     </div>
                 </div>
-            </div>
 
-        <?php endforeach; ?>
+            <?php endforeach; ?>
+
+        <?php endif; ?>
 
     </div>
 </div>
