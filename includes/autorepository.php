@@ -68,4 +68,14 @@ class AutoRepository
             'id' => $id
         ]);
     }
+    public function deleteAuto(int $id): void
+    {
+        $sql = "DELETE FROM auto WHERE auto_id = :id";
+
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute([
+            'id' => $id
+        ]);
+    }
 }

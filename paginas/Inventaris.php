@@ -27,6 +27,11 @@ if (isset($_POST['aankomst'])) {
     $repository->registreerAankomst((int)$_POST['auto_id']);
 
 }
+if (isset($_POST['delete'])) {
+
+    $repository->deleteAuto((int)$_POST['auto_id']);
+
+}
 
 $autos = $repository->getAllAutos();
 
@@ -54,6 +59,20 @@ foreach ($autos as $row) {
     echo "</form>";
     echo "</div>";
     echo "</div>";
+
+    echo "<form method='post' class='mt-2'>";
+
+    echo "<input type='hidden' name='auto_id' value='".$row['auto_id']."'>";
+
+    echo "<button
+        type='submit'
+        name='delete'
+        class='btn btn-danger'
+        onclick='return confirm(\"Weet je zeker dat je deze auto wilt verwijderen?\")'>
+        Verwijderen
+      </button>";
+
+    echo "</form>";
 }
 ?>
 </body>
