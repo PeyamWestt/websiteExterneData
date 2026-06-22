@@ -15,22 +15,24 @@
 </head>
 <body>
 <?php
-include "../includes/database.php";
-    StartConnection("auto_api");
+require_once "../includes/database.php";
+require_once "../includes/autorepository.php";
 
-$selectQuery = "
-SELECT merk.merk_naam,model.model_naam,type.type_naam, jaar.jaar_naam
- ,auto.*
-FROM auto
-INNER JOIN model ON auto.model_id = model.model_id
-INNER JOIN merk ON model.merk_id = merk.merk_id
-INNER JOIN type ON auto.type_id = type.type_id
-INNER JOIN jaar on auto.jaar_id = jaar.jaar_id
-ORDER BY auto.aankomst_moment, auto.bestel_moment;";
+$database = new Database("auto_api");
 
-$resultSelect = ExecuteSelectQuery($selectQuery);
+$repository = new AutoRepository($database->getConnection());
 
-foreach ($resultSelect as $row) {
+if (isset($_POST['aankomst'])) {
+
+    $repository->registreerAankomst((int)$_POST['auto_id']);
+
+}
+
+$autos = $repository->getAllAutos();
+
+
+
+foreach ($autos as $row) {
     echo "<div class='card mb-3'>";
     echo "<div class='card-body'>";
     echo "<h5 class='card-title'>" . htmlspecialchars($row['merk_naam']) . " " . htmlspecialchars($row['model_naam']) . "</h5>";
@@ -39,6 +41,17 @@ foreach ($resultSelect as $row) {
     echo "<p class='card-text'>Aankomst moment: " . htmlspecialchars($row['aankomst_moment']) . "</p>";
     echo "<p class='card-text'>Bestel moment: " . htmlspecialchars($row['bestel_moment']) . "</p>";
     echo "<p class='card-text'>Bestelopmerking: " . htmlspecialchars($row['auto_opmerking']) . "</p>";
+    echo "<form method='post'>";
+
+    echo "<input type='hidden' name='auto_id' value='".$row['auto_id']."'>";
+
+    echo "<button type='submit'
+              name='aankomst'
+              class='btn btn-success'>
+        Auto aangekomen
+      </button>";
+
+    echo "</form>";
     echo "</div>";
     echo "</div>";
 }

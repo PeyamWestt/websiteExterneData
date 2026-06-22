@@ -1,66 +1,31 @@
 <?php
 
+class Database
+{
+    private PDO $conn;
 
-
-
-
-     function StartConnection($dbname)
+    public function __construct(string $dbname)
     {
-// Function to establish database connection
-
-        global $conn;
-// Access global connection variable
-
         $host = "localhost";
-// Database server hostname
-        $dbname = "auto_api";
-// Commented out default database name
         $username = "root";
-// Database username
-        $password = ""; // Empty on default in XAMPP
-// Database password (empty for XAMPP default)
+        $password = "";
 
         try {
-// Try to create PDO connection
-            $conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
-// Create PDO instance with MySQL host, database, and charset
+            $this->conn = new PDO(
+                "mysql:host=$host;dbname=$dbname;charset=utf8",
+                $username,
+                $password
+            );
 
-// Turns on PDO errors
-            $conn->setAttribute(PDO::ATTR_ERRMODE, 2);
-// Set error mode to exception for better error handling
-//echo "Verbinding met $dbname gemaakt!";
-// Commented out success message
-            return $conn;
-// Return the connection object
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         } catch (PDOException $e) {
-// Catch connection errors
-            echo "Verbinding mislukt: " . $e->getMessage();
-// Display connection failure message with error details
+            die("Verbinding mislukt: " . $e->getMessage());
         }
     }
 
-
-     function ExecuteSelectQuery($selectQuery)
+    public function getConnection(): PDO
     {
-
-        global $conn;
-        echo "Query $selectQuery";
-        try {
-
-            //$conn = startConnection($dbname);
-
-            $stmt = $conn->prepare($selectQuery);
-            $stmt->execute();
-
-            // Resultaat als associatieve array
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            //echo "Query $query";
-            return $result;
-        } catch (PDOException $e) {
-            echo "Query fout: " . $e->getMessage();
-            return [];
-        }
-
+        return $this->conn;
+    }
 }
