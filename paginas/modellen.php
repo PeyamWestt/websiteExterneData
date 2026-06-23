@@ -1,12 +1,20 @@
 <?php
 
 require_once '../includes/ApiService.php';
+require_once '../includes/database.php';
+require_once '../includes/autorepository.php';
 
 $api = new ApiService();
 
 $make = $_GET['make'] ?? '';
 
 $cars = $api->getCarsByMake($make);
+
+$repository = new AutoRepository((new Database("auto_api"))->getConnection());
+
+if(isset($_POST['bestel'])) {
+    $repository->orderAuto($_POST['merk'], $_POST['model'], $_POST['year'], $_POST['type'], $_POST['opmerking']);
+}
 
 
 ?>
@@ -20,8 +28,8 @@ $cars = $api->getCarsByMake($make);
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-        rel="stylesheet">
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet">
 </head>
 <body>
 
@@ -35,7 +43,7 @@ $cars = $api->getCarsByMake($make);
 
     <div class="row">
 
-        <?php foreach ($cars as $car): ?>
+        <?php foreach ($cars as $index => $car): ?>
 
             <div class="col-md-4 mb-4">
 
@@ -52,6 +60,46 @@ $cars = $api->getCarsByMake($make);
                             Type auto: <?= htmlspecialchars($car['type'] ?? 'Onbekend') ?><br>
                         </p>
 
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_<?= $index ?>">
+                            Bestel deze auto
+                        </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="modal_<?= $index ?>" tabindex="-1" aria-labelledby="modalLabel_<?= $index ?>" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="modalLabel_<?= $index ?>">Bestel auto - <?= htmlspecialchars($car['model']) ?></h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form method="POST">
+                                            <div class="mb-3">
+                                                <label class="form-label">Merk</label>
+                                                <input type="text" class="form-control" name="merk" value="<?= htmlspecialchars($car['make'] ?? '') ?>" readonly>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Model</label>
+                                                <input type="text" class="form-control" name="model" value="<?= htmlspecialchars($car['model'] ?? '') ?>" readonly>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Bouwjaar</label>
+                                                <input type="text" class="form-control" name="year" value="<?= htmlspecialchars($car['year'] ?? '') ?>" readonly>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Type</label>
+                                                <input type="text" class="form-control" name="type" value="<?= htmlspecialchars($car['type'] ?? '') ?>" readonly>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Bestel opmerking</label>
+                                                <input type="text" class="form-control" name="opmerking" placeholder="Voeg een opmerking toe (optioneel)">
+                                            </div>
+                                            <button type="submit" class="btn btn-primary" name="bestel">Bestel deze auto</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                 </div>

@@ -18,24 +18,6 @@ class AutoRepository
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function updateAuto(array $auto): void
-    {
-        $sql = "UPDATE auto
-                SET auto_opmerking = :opmerking,
-                    aankomst_moment = :aankomst,
-                    bestel_moment = :bestel
-                WHERE auto_id = :id";
-
-        $stmt = $this->db->prepare($sql);
-
-        $stmt->execute([
-            'id' => $auto['auto_id'],
-            'opmerking' => $auto['auto_opmerking'],
-            'aankomst' => $auto['aankomst_moment'],
-            'bestel' => $auto['bestel_moment']
-        ]);
-    }
-
     public function getAllAutos(): array
     {
         $sql = "
@@ -76,6 +58,19 @@ class AutoRepository
 
         $stmt->execute([
             'id' => $id
+        ]);
+    }
+    public function orderAuto(string $merk_naam, string $model_naam, string $type_naam, string $jaar_naam, string $opmerking): void
+    {
+        $sql = "CALL bestel_auto (:merk, :model_id, :type_id, :jaar_id, :opmerking, @bestel_id)";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            'merk'=> $merk_naam,
+            'model_id' => $model_naam,
+            'type_id' => $type_naam,
+            'jaar_id' => $jaar_naam,
+            'opmerking' => $opmerking
         ]);
     }
 }
