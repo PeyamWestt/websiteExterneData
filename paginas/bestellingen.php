@@ -36,24 +36,30 @@
 <body>
 <div class="container mt-4">
     <?php
+    // Inclusief het database-configuratiebestand
     require_once "../includes/database.php";
+    // Inclusief de AutoRepository-klasse
     require_once "../includes/autorepository.php";
 
+    // Maak een nieuw Database-object aan en verbind met de 'auto_api' database
     $database = new Database("auto_api");
 
+    // Maak een nieuw AutoRepository-object aan met de database-verbinding
     $repository = new AutoRepository($database->getConnection());
 
+    // Controleer of er een POST-verzoek met 'aankomst'-knop is
     if (isset($_POST['aankomst'])) {
-
+        // Registreer de aankomst van de auto met het gegeven ID
         $repository->registreerAankomst((int)$_POST['auto_id']);
-
     }
+
+    // Controleer of er een POST-verzoek met 'delete'-knop is
     if (isset($_POST['delete'])) {
-
+        // Verwijder de auto met het gegeven ID
         $repository->deleteAuto((int)$_POST['auto_id']);
-
     }
 
+    // Haal alle auto's in transit op
     $autos = $repository->getAutosInTransit();
     ?>
 
@@ -71,6 +77,7 @@
         </tr>
         </thead>
         <tbody>
+        <!-- Loop door alle auto's in de array -->
         <?php foreach ($autos as $row): ?>
             <tr>
                 <td><?= htmlspecialchars($row['merk_naam']) ?></td>

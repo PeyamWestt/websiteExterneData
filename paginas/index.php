@@ -1,18 +1,25 @@
 <?php
-
+// Inclusief de ApiService-klasse
 require_once '../includes/ApiService.php';
+// Inclusief de Database-klasse
 require_once '../includes/database.php';
+// Inclusief de AutoRepository-klasse
 require_once '../includes/autorepository.php';
 
+// Maak een nieuw ApiService-object aan
 $api = new ApiService();
 
+// Controleer of er een GET-parameter 'make' is meegegeven
 if (isset($_GET['make'])) {
+    // Slaag de merknaam op
     $make = $_GET['make'];
 
+    // Haal auto's op via de API met het gegeven merk
     $response = $api->getContentFromApi(
             'cars?make=' . urlencode($make)
     );
 } else {
+    // Haal standaard alle merken op via de API
     $response = $api->getContentFromApi('');
 }
 ?>
@@ -52,9 +59,9 @@ if (isset($_GET['make'])) {
 </nav>
 <div class="container mt-4">
     <div class="row">
-
+        <!-- Controleer of geen 'make' parameter is gegeven -->
         <?php if (!isset($_GET['make'])): ?>
-
+            <!-- Loop door alle beschikbare merken -->
             <?php foreach ($response as $auto): ?>
 
                 <div class="col-md-4 mb-4">
@@ -76,7 +83,6 @@ if (isset($_GET['make'])) {
                 </div>
 
             <?php endforeach; ?>
-
         <?php endif; ?>
 
     </div>

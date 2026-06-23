@@ -1,22 +1,28 @@
 <?php
-
+// Inclusief de ApiService-klasse
 require_once '../includes/ApiService.php';
+// Inclusief de Database-klasse
 require_once '../includes/database.php';
+// Inclusief de AutoRepository-klasse
 require_once '../includes/autorepository.php';
 
+// Maak een nieuw ApiService-object aan
 $api = new ApiService();
 
+// Haal de merknaam op uit de GET-parameters (of gebruik een lege string)
 $make = $_GET['make'] ?? '';
 
+// Haal alle auto's van dit merk op via de API
 $cars = $api->getCarsByMake($make);
 
+// Maak een nieuw Database-object aan en haal de repository op
 $repository = new AutoRepository((new Database("auto_api"))->getConnection());
 
+// Controleer of er een POST-verzoek met 'bestel'-knop is
 if(isset($_POST['bestel'])) {
+    // Registreer de nieuwe autobeshelling met alle gegeven details
     $repository->orderAuto($_POST['merk'], $_POST['model'], $_POST['year'], $_POST['type'], $_POST['opmerking']);
 }
-
-
 ?>
 
 <!doctype html>
@@ -54,6 +60,7 @@ if(isset($_POST['bestel'])) {
 
 <div class="container mt-4">
 
+    <!-- Toon de titel met de merknaam -->
     <h1>Auto's van <?= htmlspecialchars($make) ?></h1>
 
     <a href="index.php" class="btn btn-secondary mb-3">
@@ -62,6 +69,7 @@ if(isset($_POST['bestel'])) {
 
     <div class="row">
 
+        <!-- Loop door alle auto's van dit merk -->
         <?php foreach ($cars as $index => $car): ?>
 
             <div class="col-md-4 mb-4">
@@ -143,3 +151,4 @@ if(isset($_POST['bestel'])) {
 </script>
 </body>
 </html>
+
