@@ -18,7 +18,7 @@ class AutoRepository
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function getAllAutos(): array
+    public function getAutosInTransit(): array
     {
         $sql = "
     SELECT
@@ -32,7 +32,30 @@ class AutoRepository
     INNER JOIN merk ON model.merk_id = merk.merk_id
     INNER JOIN type ON auto.type_id = type.type_id
     INNER JOIN jaar ON auto.jaar_id = jaar.jaar_id
-    ORDER BY auto.aankomst_moment, auto.bestel_moment";
+    WHERE auto.aankomst_moment IS NULL
+    ORDER BY auto.bestel_moment";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function getAutosInShowroom(): array
+    {
+        $sql = "
+    SELECT
+        merk.merk_naam,
+        model.model_naam,
+        type.type_naam,
+        jaar.jaar_naam,
+        auto.*
+    FROM auto
+    INNER JOIN model ON auto.model_id = model.model_id
+    INNER JOIN merk ON model.merk_id = merk.merk_id
+    INNER JOIN type ON auto.type_id = type.type_id
+    INNER JOIN jaar ON auto.jaar_id = jaar.jaar_id
+    WHERE auto.aankomst_moment IS NOT NULL
+    ORDER BY auto.aankomst_moment";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
